@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FinzaCore - Blog de Finanzas y Tecnología</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="container">
+      <a href="/" class="nav-logo">Finza<span>Core</span></a>
+      <ul class="nav-links">
+        <li><a href="/" class="active">Inicio</a></li>
+        <li><a href="/admin.html">Admin</a></li>
+      </ul>
+      <a href="#articulos" class="btn">Leer artículos</a>
+    </div>
+  </nav>
+
+  <main>
+    <section class="hero container">
+      <h1>Ideas Financieras y <span>Tecnológicas</span></h1>
+      <p>Explora el apasionante mundo de las finanzas y la vanguardia de la innovación digital. Todo sin frameworks pesados.</p>
+    </section>
+
+    <section id="articulos" class="container">
+      <div id="blog-grid" class="blog-grid">
+        <!-- JS inserta las tarjetas aquí -->
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      © 2026 FinzaCore. Rediseñado a Vanilla HTML.
+    </div>
+  </footer>
+
+  <div id="toast-container" class="toast-container"></div>
+  <script src="app.js"></script>
+</body>
+</html>
