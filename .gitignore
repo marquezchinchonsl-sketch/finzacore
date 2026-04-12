@@ -1,3 +1,22 @@
+# Dependencias
 node_modules/
+**/node_modules/
+
+# Builds
+dist/
+**/dist/
+
+# Entorno
+.env
+.env.local
+**/.env
+**/.env.local
+
+# Datos sensibles
+data/
+**/data/blogs.json
+
+# Basura
 .DS_Store
-data/*.json
+*.log
+server.log
