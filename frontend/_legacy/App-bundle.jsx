@@ -85,7 +85,7 @@ import { Link as Link3 } from "react-router-dom";
 // src/utils.js
 var API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3001";
 async function apiFetch(path, options = {}) {
-  const token = localStorage.getItem("nexo_token");
+  const token = localStorage.getItem("finzacore_token");
   const headers = { "Content-Type": "application/json", ...options.headers };
   if (token) headers["Authorization"] = `Bearer ${token}`;
   const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
@@ -438,7 +438,7 @@ function BlogPost() {
     justifyContent: "center",
     fontSize: "1.2rem",
     flexShrink: 0
-  } }, "\u2726"), /* @__PURE__ */ React8.createElement("div", null, /* @__PURE__ */ React8.createElement("div", { style: { fontWeight: 700, fontSize: "0.9rem" } }, blog.author), /* @__PURE__ */ React8.createElement("div", { style: { color: "var(--text-muted)", fontSize: "0.8rem" } }, "Editor de NEXO"))), /* @__PURE__ */ React8.createElement("hr", { style: { border: "none", borderTop: "1px solid var(--border)", marginBottom: "var(--space-2xl)" } }), /* @__PURE__ */ React8.createElement("article", { className: "prose" }, /* @__PURE__ */ React8.createElement(ReactMarkdown, { remarkPlugins: [remarkGfm] }, blog.content)), /* @__PURE__ */ React8.createElement(AdSlot, { type: "in-article" }), /* @__PURE__ */ React8.createElement("div", { style: { display: "flex", justifyContent: "space-between", marginTop: "var(--space-2xl)", paddingTop: "var(--space-xl)", borderTop: "1px solid var(--border)", flexWrap: "wrap", gap: "1rem" } }, /* @__PURE__ */ React8.createElement(Link6, { to: "/blogs", className: "btn btn--outline" }, "\u2190 Volver a art\xEDculos"), /* @__PURE__ */ React8.createElement("div", { style: { display: "flex", gap: "0.5rem" } }, /* @__PURE__ */ React8.createElement(
+  } }, "\u2726"), /* @__PURE__ */ React8.createElement("div", null, /* @__PURE__ */ React8.createElement("div", { style: { fontWeight: 700, fontSize: "0.9rem" } }, blog.author), /* @__PURE__ */ React8.createElement("div", { style: { color: "var(--text-muted)", fontSize: "0.8rem" } }, "Editor de FinzaCore"))), /* @__PURE__ */ React8.createElement("hr", { style: { border: "none", borderTop: "1px solid var(--border)", marginBottom: "var(--space-2xl)" } }), /* @__PURE__ */ React8.createElement("article", { className: "prose" }, /* @__PURE__ */ React8.createElement(ReactMarkdown, { remarkPlugins: [remarkGfm] }, blog.content)), /* @__PURE__ */ React8.createElement(AdSlot, { type: "in-article" }), /* @__PURE__ */ React8.createElement("div", { style: { display: "flex", justifyContent: "space-between", marginTop: "var(--space-2xl)", paddingTop: "var(--space-xl)", borderTop: "1px solid var(--border)", flexWrap: "wrap", gap: "1rem" } }, /* @__PURE__ */ React8.createElement(Link6, { to: "/blogs", className: "btn btn--outline" }, "\u2190 Volver a art\xEDculos"), /* @__PURE__ */ React8.createElement("div", { style: { display: "flex", gap: "0.5rem" } }, /* @__PURE__ */ React8.createElement(
     "button",
     {
       className: "btn btn--ghost btn--sm",
@@ -464,10 +464,10 @@ function AdminLogin() {
   const [error, setError] = useState6("");
   const navigate = useNavigate2();
   useEffect5(() => {
-    const token = localStorage.getItem("nexo_token");
+    const token = localStorage.getItem("finzacore_token");
     if (token) {
       api.verify().then(() => navigate("/admin/dashboard")).catch(() => {
-        localStorage.removeItem("nexo_token");
+        localStorage.removeItem("finzacore_token");
       });
     }
   }, [navigate]);
@@ -477,7 +477,7 @@ function AdminLogin() {
     setLoading(true);
     try {
       const { token } = await api.login(password);
-      localStorage.setItem("nexo_token", token);
+      localStorage.setItem("finzacore_token", token);
       navigate("/admin/dashboard");
     } catch (err) {
       setError(err.message || "Contrase\xF1a incorrecta");
@@ -505,7 +505,7 @@ function AdminLogin() {
     background: "radial-gradient(circle, rgba(0,212,255,0.2) 0%, transparent 70%)",
     filter: "blur(60px)",
     pointerEvents: "none"
-  } }), /* @__PURE__ */ React9.createElement("div", { className: "login-card animate-fade-up" }, /* @__PURE__ */ React9.createElement("div", { className: "login-card__logo" }, "NEXO"), /* @__PURE__ */ React9.createElement("div", { className: "login-card__subtitle" }, "Panel de administraci\xF3n"), /* @__PURE__ */ React9.createElement("form", { onSubmit: handleSubmit, style: { display: "flex", flexDirection: "column", gap: "var(--space-lg)" } }, /* @__PURE__ */ React9.createElement("div", { className: "form-group", style: { marginBottom: 0 } }, /* @__PURE__ */ React9.createElement("label", { className: "form-label" }, "Contrase\xF1a de acceso"), /* @__PURE__ */ React9.createElement(
+  } }), /* @__PURE__ */ React9.createElement("div", { className: "login-card animate-fade-up" }, /* @__PURE__ */ React9.createElement("div", { className: "login-card__logo">FinzaCore"), /* @__PURE__ */ React9.createElement("div", { className: "login-card__subtitle" }, "Panel de administraci\xF3n"), /* @__PURE__ */ React9.createElement("form", { onSubmit: handleSubmit, style: { display: "flex", flexDirection: "column", gap: "var(--space-lg)" } }, /* @__PURE__ */ React9.createElement("div", { className: "form-group", style: { marginBottom: 0 } }, /* @__PURE__ */ React9.createElement("label", { className: "form-label" }, "Contrase\xF1a de acceso"), /* @__PURE__ */ React9.createElement(
     "input",
     {
       type: "password",
@@ -532,7 +532,7 @@ import { Link as Link7, useNavigate as useNavigate3, useLocation as useLocation2
 function Sidebar({ onLogout }) {
   const location = useLocation2();
   const path = location.pathname;
-  return /* @__PURE__ */ React10.createElement("aside", { className: "admin-sidebar" }, /* @__PURE__ */ React10.createElement("div", { className: "admin-sidebar__header" }, /* @__PURE__ */ React10.createElement("div", { className: "admin-sidebar__logo" }, "NEXO"), /* @__PURE__ */ React10.createElement("div", { className: "admin-sidebar__tagline" }, "Panel de administraci\xF3n")), /* @__PURE__ */ React10.createElement("nav", { className: "admin-sidebar__nav" }, /* @__PURE__ */ React10.createElement("div", { className: "admin-sidebar__section-label" }, "Gesti\xF3n"), /* @__PURE__ */ React10.createElement(Link7, { to: "/admin/dashboard", className: `admin-nav-link ${path === "/admin/dashboard" ? "active" : ""}` }, /* @__PURE__ */ React10.createElement("span", { className: "admin-nav-link__icon" }, "\u{1F4CA}"), /* @__PURE__ */ React10.createElement("span", null, "Dashboard")), /* @__PURE__ */ React10.createElement(Link7, { to: "/admin/new", className: `admin-nav-link ${path === "/admin/new" ? "active" : ""}` }, /* @__PURE__ */ React10.createElement("span", { className: "admin-nav-link__icon" }, "\u270F\uFE0F"), /* @__PURE__ */ React10.createElement("span", null, "Nuevo art\xEDculo")), /* @__PURE__ */ React10.createElement(Link7, { to: "/admin/posts", className: `admin-nav-link ${path === "/admin/posts" ? "active" : ""}` }, /* @__PURE__ */ React10.createElement("span", { className: "admin-nav-link__icon" }, "\u{1F4C4}"), /* @__PURE__ */ React10.createElement("span", null, "Mis art\xEDculos"))), /* @__PURE__ */ React10.createElement("div", { className: "admin-sidebar__footer" }, /* @__PURE__ */ React10.createElement("a", { href: "/", target: "_blank", className: "admin-nav-link" }, /* @__PURE__ */ React10.createElement("span", { className: "admin-nav-link__icon" }, "\u{1F310}"), /* @__PURE__ */ React10.createElement("span", null, "Ver el blog")), /* @__PURE__ */ React10.createElement("button", { onClick: onLogout, className: "admin-logout-btn" }, /* @__PURE__ */ React10.createElement("span", null, "\u21A9"), "Cerrar sesi\xF3n")));
+  return /* @__PURE__ */ React10.createElement("aside", { className: "admin-sidebar" }, /* @__PURE__ */ React10.createElement("div", { className: "admin-sidebar__header" }, /* @__PURE__ */ React10.createElement("div", { className: "admin-sidebar__logo">FinzaCore"), /* @__PURE__ */ React10.createElement("div", { className: "admin-sidebar__tagline" }, "Panel de administraci\xF3n")), /* @__PURE__ */ React10.createElement("nav", { className: "admin-sidebar__nav" }, /* @__PURE__ */ React10.createElement("div", { className: "admin-sidebar__section-label" }, "Gesti\xF3n"), /* @__PURE__ */ React10.createElement(Link7, { to: "/admin/dashboard", className: `admin-nav-link ${path === "/admin/dashboard" ? "active" : ""}` }, /* @__PURE__ */ React10.createElement("span", { className: "admin-nav-link__icon" }, "\u{1F4CA}"), /* @__PURE__ */ React10.createElement("span", null, "Dashboard")), /* @__PURE__ */ React10.createElement(Link7, { to: "/admin/new", className: `admin-nav-link ${path === "/admin/new" ? "active" : ""}` }, /* @__PURE__ */ React10.createElement("span", { className: "admin-nav-link__icon" }, "\u270F\uFE0F"), /* @__PURE__ */ React10.createElement("span", null, "Nuevo art\xEDculo")), /* @__PURE__ */ React10.createElement(Link7, { to: "/admin/posts", className: `admin-nav-link ${path === "/admin/posts" ? "active" : ""}` }, /* @__PURE__ */ React10.createElement("span", { className: "admin-nav-link__icon" }, "\u{1F4C4}"), /* @__PURE__ */ React10.createElement("span", null, "Mis art\xEDculos"))), /* @__PURE__ */ React10.createElement("div", { className: "admin-sidebar__footer" }, /* @__PURE__ */ React10.createElement("a", { href: "/", target: "_blank", className: "admin-nav-link" }, /* @__PURE__ */ React10.createElement("span", { className: "admin-nav-link__icon" }, "\u{1F310}"), /* @__PURE__ */ React10.createElement("span", null, "Ver el blog")), /* @__PURE__ */ React10.createElement("button", { onClick: onLogout, className: "admin-logout-btn" }, /* @__PURE__ */ React10.createElement("span", null, "\u21A9"), "Cerrar sesi\xF3n")));
 }
 function TopBar({ title, subtitle, action }) {
   return /* @__PURE__ */ React10.createElement("div", { className: "admin-topbar" }, /* @__PURE__ */ React10.createElement("div", { className: "admin-topbar__left" }, /* @__PURE__ */ React10.createElement("h1", { className: "admin-topbar__title" }, title), subtitle && /* @__PURE__ */ React10.createElement("p", { className: "admin-topbar__subtitle" }, subtitle)), action && /* @__PURE__ */ React10.createElement("div", { className: "admin-topbar__action" }, action));
@@ -550,7 +550,7 @@ function BlogEditor({ existing = null, onSave }) {
     coverImage: "",
     published: true,
     featured: false,
-    author: "NEXO Editorial",
+    author: "FinzaCore Editorial",
     ...existing ? {
       ...existing,
       tags: Array.isArray(existing.tags) ? existing.tags.join(", ") : ""
@@ -662,7 +662,7 @@ Texto de la segunda secci\xF3n.
       className: "form-input",
       value: form.author,
       onChange: (e) => update("author", e.target.value),
-      placeholder: "NEXO Editorial"
+      placeholder: "FinzaCore Editorial"
     }
   )), /* @__PURE__ */ React10.createElement("div", { className: "form-group", style: { marginBottom: 0 } }, /* @__PURE__ */ React10.createElement("label", { className: "form-label" }, "Tags ", /* @__PURE__ */ React10.createElement("span", { style: { fontWeight: 400, color: "var(--text-muted)" } }, "(separados por comas)")), /* @__PURE__ */ React10.createElement(
     "input",
@@ -733,7 +733,7 @@ function Dashboard({ navigate }) {
     TopBar,
     {
       title: "Dashboard",
-      subtitle: "Resumen de tu blog NEXO",
+      subtitle: "Resumen de tu blog FinzaCore",
       action: /* @__PURE__ */ React10.createElement("button", { className: "btn btn--primary", onClick: () => navigate("/admin/new") }, "\u270F\uFE0F Nuevo art\xEDculo")
     }
   ), /* @__PURE__ */ React10.createElement("div", { className: "dashboard-stats" }, [
@@ -872,12 +872,12 @@ function Admin() {
   const [authed, setAuthed] = useState7(false);
   const [checking, setChecking] = useState7(true);
   const logout = () => {
-    localStorage.removeItem("nexo_token");
+    localStorage.removeItem("finzacore_token");
     navigate("/admin");
   };
   useEffect6(() => {
     api.verify().then(() => setAuthed(true)).catch(() => {
-      localStorage.removeItem("nexo_token");
+      localStorage.removeItem("finzacore_token");
       navigate("/admin");
     }).finally(() => setChecking(false));
   }, [navigate]);

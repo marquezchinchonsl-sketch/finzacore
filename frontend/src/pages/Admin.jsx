@@ -11,7 +11,7 @@ function Sidebar({ onLogout }) {
   return (
     <aside className="admin-sidebar">
       <div className="admin-sidebar__header">
-        <div className="admin-sidebar__logo">NEXO</div>
+        <div className="admin-sidebar__logo">FinzaCore</div>
         <div className="admin-sidebar__tagline">Panel de administración</div>
       </div>
 
@@ -72,7 +72,7 @@ function BlogEditor({ existing = null, onSave }) {
     coverImage: '',
     published: true,
     featured: false,
-    author: 'NEXO Editorial',
+    author: 'FinzaCore Editorial',
     ...(existing ? {
       ...existing,
       tags: Array.isArray(existing.tags) ? existing.tags.join(', ') : '',
@@ -251,7 +251,7 @@ function BlogEditor({ existing = null, onSave }) {
               className="form-input"
               value={form.author}
               onChange={e => update('author', e.target.value)}
-              placeholder="NEXO Editorial"
+              placeholder="FinzaCore Editorial"
             />
           </div>
 
@@ -357,7 +357,7 @@ function Dashboard({ navigate }) {
     <>
       <TopBar
         title="Dashboard"
-        subtitle="Resumen de tu blog NEXO"
+        subtitle="Resumen de tu blog FinzaCore"
         action={
           <button className="btn btn--primary" onClick={() => navigate('/admin/new')}>
             ✏️ Nuevo artículo
@@ -671,14 +671,14 @@ export default function Admin() {
   const [checking, setChecking] = useState(true);
 
   const logout = () => {
-    localStorage.removeItem('nexo_token');
+    localStorage.removeItem('finzacore_token');
     navigate('/admin');
   };
 
   useEffect(() => {
     api.verify()
       .then(() => setAuthed(true))
-      .catch(() => { localStorage.removeItem('nexo_token'); navigate('/admin'); })
+      .catch(() => { localStorage.removeItem('finzacore_token'); navigate('/admin'); })
       .finally(() => setChecking(false));
   }, [navigate]);
 

@@ -40,7 +40,7 @@ import Contacto from './pages/Contacto';
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
 async function apiFetch(path, options = {}) {
-  const token = localStorage.getItem('nexo_token');
+  const token = localStorage.getItem('finzacore_token');
   const headers = { 'Content-Type': 'application/json', ...options.headers };
   if (token) headers['Authorization'] = `Bearer ${token}`;
 
@@ -416,7 +416,7 @@ function Sidebar({ onLogout }) {
   return (
     <aside className="admin-sidebar">
       <div className="admin-sidebar__header">
-        <div className="admin-sidebar__logo">NEXO</div>
+        <div className="admin-sidebar__logo">FinzaCore</div>
         <div className="admin-sidebar__tagline">Panel de administración</div>
       </div>
 
@@ -477,7 +477,7 @@ function BlogEditor({ existing = null, onSave }) {
     coverImage: '',
     published: true,
     featured: false,
-    author: 'NEXO Editorial',
+    author: 'FinzaCore Editorial',
     ...(existing ? {
       ...existing,
       tags: Array.isArray(existing.tags) ? existing.tags.join(', ') : '',
@@ -656,7 +656,7 @@ function BlogEditor({ existing = null, onSave }) {
               className="form-input"
               value={form.author}
               onChange={e => update('author', e.target.value)}
-              placeholder="NEXO Editorial"
+              placeholder="FinzaCore Editorial"
             />
           </div>
 
@@ -762,7 +762,7 @@ function Dashboard({ navigate }) {
     <>
       <TopBar
         title="Dashboard"
-        subtitle="Resumen de tu blog NEXO"
+        subtitle="Resumen de tu blog FinzaCore"
         action={
           <button className="btn btn--primary" onClick={() => navigate('/admin/new')}>
             ✏️ Nuevo artículo
@@ -1076,14 +1076,14 @@ function Admin() {
   const [checking, setChecking] = useState(true);
 
   const logout = () => {
-    localStorage.removeItem('nexo_token');
+    localStorage.removeItem('finzacore_token');
     navigate('/admin');
   };
 
   useEffect(() => {
     api.verify()
       .then(() => setAuthed(true))
-      .catch(() => { localStorage.removeItem('nexo_token'); navigate('/admin'); })
+      .catch(() => { localStorage.removeItem('finzacore_token'); navigate('/admin'); })
       .finally(() => setChecking(false));
   }, [navigate]);
 
@@ -1124,10 +1124,10 @@ function AdminLogin() {
 
   // Check if already logged in
   useEffect(() => {
-    const token = localStorage.getItem('nexo_token');
+    const token = localStorage.getItem('finzacore_token');
     if (token) {
       api.verify().then(() => navigate('/admin/dashboard')).catch(() => {
-        localStorage.removeItem('nexo_token');
+        localStorage.removeItem('finzacore_token');
       });
     }
   }, [navigate]);
@@ -1138,7 +1138,7 @@ function AdminLogin() {
     setLoading(true);
     try {
       const { token } = await api.login(password);
-      localStorage.setItem('nexo_token', token);
+      localStorage.setItem('finzacore_token', token);
       navigate('/admin/dashboard');
     } catch (err) {
       setError(err.message || 'Contraseña incorrecta');
@@ -1166,7 +1166,7 @@ function AdminLogin() {
       }}></div>
 
       <div className="login-card animate-fade-up">
-        <div className="login-card__logo">NEXO</div>
+        <div className="login-card__logo">FinzaCore</div>
         <div className="login-card__subtitle">Panel de administración</div>
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-lg)' }}>
@@ -1544,7 +1544,7 @@ function BlogPost() {
           </div>
           <div>
             <div style={{ fontWeight: 700, fontSize: '0.9rem' }}>{blog.author}</div>
-            <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Editor de NEXO</div>
+            <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Editor de FinzaCore</div>
           </div>
         </div>
 

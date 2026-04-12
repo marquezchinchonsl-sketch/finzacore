@@ -1,25 +1,16 @@
-const express = require('express');
-const cors = require('cors');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+const http = require('http');
 const fs = require('fs');
 const path = require('path');
-const { v4: uuidv4 } = require('uuid');
+const crypto = require('crypto');
 
-const app = express();
+// -- Configuración Base --
 const PORT = process.env.PORT || 3001;
 const JWT_SECRET = process.env.JWT_SECRET || 'nexo_blog_secret_2026_change_this';
-const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH || bcrypt.hashSync('admin123', 10);
-
+// Encriptación manual nativa reemplazando a Bcrypt
+const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH || crypto.scryptSync('admin123', 'salty', 64).toString('hex');
 const DATA_PATH = path.join(__dirname, 'data', 'blogs.json');
 
-app.use(cors());
-app.use(express.json({ limit: '10mb' }));
-
-// Sirve todos los archivos estáticos de la carpeta public
-app.use(express.static(path.join(__dirname, 'public')));
-
-// ── Helpers ──────────────────────────────────────────────────────────────────
+// -- Sistema de Archivos de Blogs --
 function readBlogs() {
   try {
     if (!fs.existsSync(DATA_PATH)) return [];
@@ -37,158 +28,234 @@ function writeBlogs(blogs) {
   fs.writeFileSync(DATA_PATH, JSON.stringify(blogs, null, 2), 'utf8');
 }
 
-function authMiddleware(req, res, next) {
-  const token = req.headers.authorization?.split(' ')[1];
-  if (!token) return res.status(401).json({ error: 'No autorizado' });
-  try {
-    req.user = jwt.verify(token, JWT_SECRET);
-    next();
-  } catch {
-    return res.status(401).json({ error: 'Token inválido' });
-  }
+// -- Helpers de JWT Hechos a Mano --
+function signJWT(payload, expiresInSeconds = 7 * 24 * 60 * 60) {
+  const header = { alg: 'HS256', typ: 'JWT' };
+  payload.exp = Math.floor(Date.now() / 1000) + expiresInSeconds;
+  
+  const hBase64 = Buffer.from(JSON.stringify(header)).toString('base64url');
+  const pBase64 = Buffer.from(JSON.stringify(payload)).toString('base64url');
+  const signature = crypto.createHmac('sha256', JWT_SECRET).update(`${hBase64}.${pBase64}`).digest('base64url');
+  
+  return `${hBase64}.${pBase64}.${signature}`;
 }
 
-// ── Auth ──────────────────────────────────────────────────────────────────────
-app.post('/api/auth/login', async (req, res) => {
-  const { password } = req.body;
-  const valid = await bcrypt.compare(password, ADMIN_PASSWORD_HASH);
-  if (!valid) return res.status(401).json({ error: 'Contraseña incorrecta' });
-  const token = jwt.sign({ admin: true }, JWT_SECRET, { expiresIn: '7d' });
-  res.json({ token });
-});
+function verifyJWT(token) {
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 3) return false;
+    const signature = crypto.createHmac('sha256', JWT_SECRET).update(`${parts[0]}.${parts[1]}`).digest('base64url');
+    if (signature !== parts[2]) return false;
+    const payload = JSON.parse(Buffer.from(parts[1], 'base64url').toString());
+    if (payload.exp && payload.exp < Date.now() / 1000) return false;
+    return payload;
+  } catch (e) { return false; }
+}
 
-app.get('/api/auth/verify', authMiddleware, (req, res) => {
-  res.json({ valid: true });
-});
+function getAuthUser(req) {
+  const authHeader = req.headers['authorization'];
+  if (!authHeader) return null;
+  const token = authHeader.split(' ')[1];
+  return verifyJWT(token);
+}
 
-// ── Public: Blogs ─────────────────────────────────────────────────────────────
-app.get('/api/blogs', (req, res) => {
-  const blogs = readBlogs();
-  const { category, search, featured, limit, page = 1 } = req.query;
-  let result = blogs.filter(b => b.published);
+function parseBody(req) {
+  return new Promise((resolve) => {
+    let body = '';
+    req.on('data', chunk => body += chunk.toString());
+    req.on('end', () => {
+      try { resolve(body ? JSON.parse(body) : {}); } 
+      catch { resolve({}); }
+    });
+  });
+}
 
-  if (category && category !== 'Todos') {
-    result = result.filter(b => b.category === category);
-  }
-  if (search) {
-    const s = search.toLowerCase();
-    result = result.filter(b =>
-      b.title.toLowerCase().includes(s) ||
-      b.summary.toLowerCase().includes(s) ||
-      (b.tags || []).some(t => t.toLowerCase().includes(s))
-    );
-  }
-  if (featured === 'true') {
-    result = result.filter(b => b.featured);
-  }
+function setCorsHeaders(res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+}
 
-  // Sort by date desc
-  result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+function sendJson(res, statusCode, data) {
+  res.writeHead(statusCode, { 'Content-Type': 'application/json' });
+  res.end(JSON.stringify(data));
+}
 
-  const total = result.length;
-  const perPage = parseInt(limit) || 9;
-  const start = (parseInt(page) - 1) * perPage;
-  const paginated = result.slice(start, start + perPage);
+// -- Servidor Estático Purgado Pura Magia --
+const MIME_TYPES = {
+  '.html': 'text/html',
+  '.js': 'text/javascript',
+  '.css': 'text/css',
+  '.json': 'application/json',
+  '.png': 'image/png',
+  '.jpg': 'image/jpg',
+  '.svg': 'image/svg+xml'
+};
 
-  res.json({ blogs: paginated, total, pages: Math.ceil(total / perPage) });
-});
-
-app.get('/api/blogs/:slug', (req, res) => {
-  const blogs = readBlogs();
-  const blog = blogs.find(b => b.slug === req.params.slug && b.published);
-  if (!blog) return res.status(404).json({ error: 'Artículo no encontrado' });
-
-  // Increment views
-  const all = readBlogs();
-  const idx = all.findIndex(b => b.id === blog.id);
-  if (idx !== -1) {
-    all[idx].views = (all[idx].views || 0) + 1;
-    writeBlogs(all);
-  }
-
-  res.json(blog);
-});
-
-app.get('/api/categories', (req, res) => {
-  const blogs = readBlogs().filter(b => b.published);
-  const cats = [...new Set(blogs.map(b => b.category))];
-  const counts = cats.map(cat => ({
-    name: cat,
-    count: blogs.filter(b => b.category === cat).length
-  }));
-  res.json(counts);
-});
-
-// ── Admin: Blogs CRUD ─────────────────────────────────────────────────────────
-app.get('/api/admin/blogs', authMiddleware, (req, res) => {
-  const blogs = readBlogs();
-  blogs.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-  res.json(blogs);
-});
-
-app.post('/api/admin/blogs', authMiddleware, (req, res) => {
-  const blogs = readBlogs();
-  const now = new Date().toISOString();
-  const blog = {
-    id: uuidv4(),
-    ...req.body,
-    views: 0,
-    createdAt: now,
-    updatedAt: now
-  };
-
-  if (!blog.slug) {
-    blog.slug = blog.title
-      .toLowerCase()
-      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .slice(0, 80);
-  }
-
-  const existing = blogs.filter(b => b.slug.startsWith(blog.slug));
-  if (existing.length > 0) blog.slug = `${blog.slug}-${existing.length}`;
-
-  blogs.unshift(blog);
-  writeBlogs(blogs);
-  res.json(blog);
-});
-
-app.put('/api/admin/blogs/:id', authMiddleware, (req, res) => {
-  const blogs = readBlogs();
-  const idx = blogs.findIndex(b => b.id === req.params.id);
-  if (idx === -1) return res.status(404).json({ error: 'No encontrado' });
-
-  blogs[idx] = {
-    ...blogs[idx],
-    ...req.body,
-    id: blogs[idx].id,
-    createdAt: blogs[idx].createdAt,
-    updatedAt: new Date().toISOString()
-  };
-
-  writeBlogs(blogs);
-  res.json(blogs[idx]);
-});
-
-app.delete('/api/admin/blogs/:id', authMiddleware, (req, res) => {
-  let blogs = readBlogs();
-  blogs = blogs.filter(b => b.id !== req.params.id);
-  writeBlogs(blogs);
-  res.json({ success: true });
-});
-
-// Single Page Application routing (Vanilla)
-app.get('*', (req, res) => {
-  const potentialHtml = path.join(__dirname, 'public', req.path + '.html');
-  if (fs.existsSync(potentialHtml)) {
-    return res.sendFile(potentialHtml);
-  }
+function serveStatic(req, res, pathname) {
+  let filepath = path.join(__dirname, 'public', pathname === '/' ? 'index.html' : pathname);
   
-  // Custom SPA fallback for article.html (if we used path params, but we use query param ?slug=...)
-  res.sendFile(path.join(__dirname, 'public/index.html'));
+  if (!path.extname(filepath)) {
+    if (fs.existsSync(filepath + '.html')) filepath += '.html';
+    else filepath = path.join(__dirname, 'public', 'index.html');
+  }
+
+  fs.stat(filepath, (err, stat) => {
+    if (err || !stat.isFile()) {
+      if (pathname.includes('.')) {
+        res.writeHead(404); return res.end();
+      }
+      filepath = path.join(__dirname, 'public', 'index.html');
+    }
+    
+    fs.readFile(filepath, (err, content) => {
+      if (err) { res.writeHead(500); return res.end(); }
+      const ext = path.extname(filepath);
+      res.writeHead(200, { 'Content-Type': MIME_TYPES[ext] || 'application/octet-stream' });
+      res.end(content, 'utf-8');
+    });
+  });
+}
+
+// =========================================================================
+// EL SERVIDOR NATIVO
+// =========================================================================
+const server = http.createServer(async (req, res) => {
+  setCorsHeaders(res);
+  
+  if (req.method === 'OPTIONS') {
+    res.writeHead(204);
+    return res.end();
+  }
+
+  // Parse URL manually replacing Express Router
+  const urlObj = new URL(req.url, `http://${req.headers.host}`);
+  const pathname = decodeURI(urlObj.pathname);
+  
+  // -- ÁRBOL DE RUTAS API --
+  if (pathname.startsWith('/api/')) {
+    const route = pathname.replace('/api/', '');
+
+    // 1. Auth: Login
+    if (route === 'auth/login' && req.method === 'POST') {
+      const body = await parseBody(req);
+      const attemptHash = crypto.scryptSync(body.password || '', 'salty', 64).toString('hex');
+      if (attemptHash !== ADMIN_PASSWORD_HASH) {
+        return sendJson(res, 401, { error: 'Contraseña incorrecta' });
+      }
+      return sendJson(res, 200, { token: signJWT({ admin: true }) });
+    }
+
+    // 2. Auth: Verify
+    if (route === 'auth/verify' && req.method === 'GET') {
+      const user = getAuthUser(req);
+      if (!user) return sendJson(res, 401, { error: 'No autorizado' });
+      return sendJson(res, 200, { valid: true });
+    }
+
+    // 3. Blogs Múltiples (Vistas públicas)
+    if (route === 'blogs' && req.method === 'GET') {
+      const blogs = readBlogs();
+      const category = urlObj.searchParams.get('category');
+      const search = urlObj.searchParams.get('search');
+      const featured = urlObj.searchParams.get('featured');
+      
+      let result = blogs.filter(b => b.published);
+      if (category && category !== 'Todos') result = result.filter(b => b.category === category);
+      if (search) {
+        const s = search.toLowerCase();
+        result = result.filter(b => b.title.toLowerCase().includes(s) || (b.tags||[]).some(t=>t.toLowerCase().includes(s)));
+      }
+      if (featured === 'true') result = result.filter(b => b.featured);
+      
+      result.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+      return sendJson(res, 200, { blogs: result, total: result.length, pages: 1 });
+    }
+
+    // 4. Categorías públicas
+    if (route === 'categories' && req.method === 'GET') {
+      const blogs = readBlogs().filter(b => b.published);
+      const cats = [...new Set(blogs.map(b => b.category))];
+      const counts = cats.map(cat => ({ name: cat, count: blogs.filter(b => b.category === cat).length }));
+      return sendJson(res, 200, counts);
+    }
+
+    // 5. Blog Específico (Público)
+    if (route.startsWith('blogs/') && req.method === 'GET') {
+      const slug = route.split('/')[1];
+      const blogs = readBlogs();
+      const blog = blogs.find(b => b.slug === slug && b.published);
+      if (!blog) return sendJson(res, 404, { error: 'No encontrado' });
+      
+      blog.views = (blog.views || 0) + 1;
+      writeBlogs(blogs);
+      return sendJson(res, 200, blog);
+    }
+
+    // ---------------------------------------------------------------------
+    // RUTAS ADMIN PROTEGIDAS
+    // ---------------------------------------------------------------------
+    if (route.startsWith('admin/blogs')) {
+      const user = getAuthUser(req);
+      if (!user) return sendJson(res, 401, { error: 'No autorizado o caducado.' });
+
+      // GET: Todo el listado
+      if (req.method === 'GET') {
+        const blogs = readBlogs();
+        blogs.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+        return sendJson(res, 200, blogs);
+      }
+      
+      // POST: Crear nuevo
+      if (req.method === 'POST') {
+        const blogs = readBlogs();
+        const body = await parseBody(req);
+        const now = new Date().toISOString();
+        const blog = {
+          id: crypto.randomUUID(), // Resuelto con Native Crypto 
+          ...body,
+          views: 0, createdAt: now, updatedAt: now
+        };
+        
+        if (!blog.slug) blog.slug = blog.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        const existing = blogs.filter(b => b.slug.startsWith(blog.slug));
+        if (existing.length > 0) blog.slug = `${blog.slug}-${existing.length}`;
+        
+        blogs.unshift(blog);
+        writeBlogs(blogs);
+        return sendJson(res, 200, blog);
+      }
+      
+      // UPDATE & DELETE
+      const idStr = route.split('/')[2];
+      if (idStr) {
+        let blogs = readBlogs();
+        const idx = blogs.findIndex(b => b.id === idStr);
+        if (idx === -1) return sendJson(res, 404, { error: 'No encontrado' });
+
+        if (req.method === 'PUT') {
+          const body = await parseBody(req);
+          blogs[idx] = { ...blogs[idx], ...body, id: blogs[idx].id, createdAt: blogs[idx].createdAt, updatedAt: new Date().toISOString() };
+          writeBlogs(blogs);
+          return sendJson(res, 200, blogs[idx]);
+        }
+        
+        if (req.method === 'DELETE') {
+          writeBlogs(blogs.filter(b => b.id !== idStr));
+          return sendJson(res, 200, { success: true });
+        }
+      }
+    }
+
+    // Ruta no encontrada en la API
+    return sendJson(res, 404, { error: 'API Endpoint Not Found' });
+  }
+
+  // Si no es /api/, sírvelo como archivo estático
+  serveStatic(req, res, pathname);
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 NEXO Backend corriendo en http://localhost:${PORT}`);
+server.listen(PORT, () => {
+  console.log(`🚀 [NATIVO] NEXO Backend Vanilla corriendo en http://localhost:${PORT}`);
+  console.log(`🍃 CERO DEPENDENCIAS. Eliminando node_modules...`);
 });

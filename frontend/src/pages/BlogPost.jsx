@@ -159,7 +159,7 @@ export default function BlogPost() {
           </div>
           <div>
             <div style={{ fontWeight: 700, fontSize: '0.9rem' }}>{blog.author}</div>
-            <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Editor de NEXO</div>
+            <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Editor de FinzaCore</div>
           </div>
         </div>
 

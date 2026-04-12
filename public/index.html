@@ -3,42 +3,73 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FinzaCore - Blog de Finanzas y Tecnología</title>
+  <title>FinzaCore - Plataforma de Finanzas y Tecnología</title>
   <link rel="stylesheet" href="styles.css">
+  <meta name="theme-color" content="#6c63ff" />
 </head>
 <body>
 
+  <!-- NAVBAR -->
   <nav class="navbar">
     <div class="container">
       <a href="/" class="nav-logo">Finza<span>Core</span></a>
       <ul class="nav-links">
         <li><a href="/" class="active">Inicio</a></li>
-        <li><a href="/admin.html">Admin</a></li>
+        <li><a href="/admin.html">Administración</a></li>
       </ul>
-      <a href="#articulos" class="btn">Leer artículos</a>
     </div>
   </nav>
 
+  <!-- HERO SECTION -->
   <main>
     <section class="hero container">
-      <h1>Ideas Financieras y <span>Tecnológicas</span></h1>
-      <p>Explora el apasionante mundo de las finanzas y la vanguardia de la innovación digital. Todo sin frameworks pesados.</p>
+      <h1>Inversiones y <span>Tecnología</span> para el futuro</h1>
+      <p>Explora el apasionante mundo de las finanzas personales, análisis de mercado y la vanguardia de la innovación digital. Tu guía diaria para tomar mejores decisiones.</p>
+      
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <span class="hero-stat-num">50k+</span>
+          <span class="hero-stat-label">Lectores</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-num">100%</span>
+          <span class="hero-stat-label">Original</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-num">24/7</span>
+          <span class="hero-stat-label">Mercados</span>
+        </div>
+      </div>
     </section>
 
+    <!-- BLOG GRID -->
     <section id="articulos" class="container">
+      <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem;">
+        <h2 style="font-size: 2rem;">Últimos Artículos</h2>
+        <a href="#articulos" class="btn btn-outline" style="font-size: 0.85rem; padding: 0.5rem 1rem;">Ver todos los temas</a>
+      </div>
+      
       <div id="blog-grid" class="blog-grid">
-        <!-- JS inserta las tarjetas aquí -->
+        <!-- JS inyectará aquí los artículos -->
+        <div style="grid-column: 1 / -1; text-align: center; padding: 4rem; color: var(--text-muted);">
+          Cargando contenido premium...
+        </div>
       </div>
     </section>
   </main>
 
-  <footer>
-    <div class="container">
-      © 2026 FinzaCore. Rediseñado a Vanilla HTML.
+  <!-- FOOTER -->
+  <footer style="text-align: center; padding: 4rem 0 2rem; border-top: 1px solid var(--glass-border); margin-top: auto;">
+    <div class="container" style="color: var(--text-muted); font-size: 0.9rem;">
+      <div class="nav-logo" style="margin-bottom: 1rem;">Finza<span>Core</span></div>
+      <p style="margin-bottom: 2rem; max-width: 400px; margin: 0 auto 2rem;">La plataforma líder que une conocimiento financiero y disrupción tecnológica.</p>
+      <p>© 2026 FinzaCore. Rediseñado a detalle (Premium Replica).</p>
     </div>
   </footer>
 
+  <!-- CONTENEDOR DE ALERTAS -->
   <div id="toast-container" class="toast-container"></div>
+  
   <script src="app.js"></script>
 </body>
 </html>

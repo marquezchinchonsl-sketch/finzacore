@@ -1,7 +1,7 @@
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
 async function apiFetch(path, options = {}) {
-  const token = localStorage.getItem('nexo_token');
+  const token = localStorage.getItem('finzacore_token');
   const headers = { 'Content-Type': 'application/json', ...options.headers };
   if (token) headers['Authorization'] = `Bearer ${token}`;
 

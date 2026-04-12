@@ -10,10 +10,10 @@ export default function AdminLogin() {
 
   // Check if already logged in
   useEffect(() => {
-    const token = localStorage.getItem('nexo_token');
+    const token = localStorage.getItem('finzacore_token');
     if (token) {
       api.verify().then(() => navigate('/admin/dashboard')).catch(() => {
-        localStorage.removeItem('nexo_token');
+        localStorage.removeItem('finzacore_token');
       });
     }
   }, [navigate]);
@@ -24,7 +24,7 @@ export default function AdminLogin() {
     setLoading(true);
     try {
       const { token } = await api.login(password);
-      localStorage.setItem('nexo_token', token);
+      localStorage.setItem('finzacore_token', token);
       navigate('/admin/dashboard');
     } catch (err) {
       setError(err.message || 'Contraseña incorrecta');
@@ -52,7 +52,7 @@ export default function AdminLogin() {
       }}></div>
 
       <div className="login-card animate-fade-up">
-        <div className="login-card__logo">NEXO</div>
+        <div className="login-card__logo">FinzaCore</div>
         <div className="login-card__subtitle">Panel de administración</div>
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-lg)' }}>

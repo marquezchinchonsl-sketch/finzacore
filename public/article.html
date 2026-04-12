@@ -5,42 +5,60 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cargando Artículo... - FinzaCore</title>
   <link rel="stylesheet" href="styles.css">
-  <style>
-    .article-header { border-bottom: none; margin-bottom: 2rem; padding-bottom: 0; }
-  </style>
 </head>
 <body>
 
+  <!-- NAVBAR -->
   <nav class="navbar">
     <div class="container">
       <a href="/" class="nav-logo">Finza<span>Core</span></a>
       <ul class="nav-links">
         <li><a href="/">Inicio</a></li>
-        <li><a href="/admin.html">Admin</a></li>
+        <li><a href="/admin.html">Administración</a></li>
       </ul>
-      <a href="/#articulos" class="btn">Leer artículos</a>
     </div>
   </nav>
 
+  <!-- LECTOR DE ARTÍCULO -->
   <main class="container">
-    <div class="article-header">
-      <div class="article-meta">
-        <span id="article-category" class="badge finanzas">Categoría</span>
-        <span id="article-date">Fecha</span>
+    <div class="article-container">
+      
+      <header class="article-header">
+        <div class="article-badges">
+          <span id="article-category" class="badge">Categoría</span>
+          <span id="article-reading-time" class="badge" style="background: rgba(255,255,255,0.05); color: var(--text-muted); border-color: transparent;">5 min de lectura</span>
+        </div>
+        <h1 id="article-title">Cargando la mejor información...</h1>
+        <div class="article-info">
+          <span>Por <strong>FinzaCore Editorial</strong></span>
+          <span id="article-date">Fecha de publicación</span>
+          <span id="article-views">👁 0 lecturas</span>
+        </div>
+      </header>
+
+      <div class="article-media">
+        <img id="article-cover" src="" alt="Portada del artículo" onerror="this.style.display='none'">
+        <div style="position: absolute; inset: 0; background: linear-gradient(to top, var(--bg-base) 0%, transparent 40%);"></div>
       </div>
-      <h1 id="article-title">Cargando Título...</h1>
+
+      <article id="article-content" class="article-body">
+        <div style="text-align: center; color: var(--text-muted);">Estamos descifrando el contenido. Por favor espera...</div>
+      </article>
+
+      <div style="margin-top: 5rem; padding-top: 3rem; border-top: 1px solid var(--glass-border); text-align: center;">
+        <h3 style="margin-bottom: 1.5rem;">¿Te ha gustado este análisis?</h3>
+        <a href="/#articulos" class="btn btn-primary" style="padding: 1rem 2rem; font-size: 1.1rem;">Explorar más artículos financieros</a>
+      </div>
+
     </div>
-
-    <img id="article-cover" class="article-cover" src="" alt="Cover" />
-
-    <article id="article-content" class="article-content">
-      Cargando contenido del artículo...
-    </article>
   </main>
 
-  <footer>
-    <div class="container">
-      © 2026 FinzaCore. Rediseñado a Vanilla HTML.
+  <!-- FOOTER -->
+  <footer style="text-align: center; padding: 4rem 0 2rem; border-top: 1px solid var(--glass-border); margin-top: auto;">
+    <div class="container" style="color: var(--text-muted); font-size: 0.9rem;">
+      <div class="nav-logo" style="margin-bottom: 1rem;">Finza<span>Core</span></div>
+      <p style="margin-bottom: 2rem; max-width: 400px; margin: 0 auto 2rem;">La plataforma líder que une conocimiento financiero y disrupción tecnológica.</p>
+      <p>© 2026 FinzaCore. Rediseñado a detalle (Premium Replica).</p>
     </div>
   </footer>
 
