@@ -1,10 +1,14 @@
 {
-  "name": "nexo-blog-vanilla",
+  "name": "finzacore-blog",
   "version": "1.0.0",
-  "description": "Cero dependencias: Plataforma Blog 100% Nativa",
+  "description": "FinzaCore Blog Platform",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js"
-  }
+    "build": "echo 'No build step required'"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {}
 }
