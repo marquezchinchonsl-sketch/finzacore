@@ -49,15 +49,15 @@ const renderCards = (blogs, containerId) => {
   `).join('');
 };
 
-if (location.pathname.endsWith('index.html') || location.pathname === '/' || location.pathname.endsWith('/')) {
+if (location.pathname.includes('index.html') || location.pathname === '/' || location.pathname.endsWith('/')) {
   fetchAPI('/blogs').then(({ blogs }) => renderCards(blogs.slice(0, 6), 'blog-grid'));
 }
 
-if (location.pathname.endsWith('blogs.html')) {
+if (location.pathname.includes('blogs.html') || location.pathname === '/blogs') {
   fetchAPI('/blogs').then(({ blogs }) => renderCards(blogs, 'full-blog-grid'));
 }
 
-if (location.pathname.endsWith('article.html')) {
+if (location.pathname.includes('article.html') || location.pathname === '/article') {
   const slug = new URLSearchParams(location.search).get('slug');
   fetchAPI(`/blogs/${slug}`).then(blog => {
     document.title = blog.title + ' - FinzaCore';
