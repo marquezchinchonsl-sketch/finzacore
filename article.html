@@ -4,49 +4,50 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cargando... - FinzaCore</title>
+  
+  <!-- SEO Open Graph & JSON-LD se inyectan dinámicamente vía app.js -->
   <link rel="stylesheet" href="styles.css">
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9437294844445415"
-     crossorigin="anonymous"></script>
+  
+  <!-- ========================================== -->
+  <!-- 1. GOOGLE ADSENSE: SCRIPT AUTO-ADS EN HEAD -->
+  <!-- ========================================== -->
+  <!-- Para maximizar ingresos, pega aquí tu script general de AdSense (Auto-ads). -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9437294844445415" crossorigin="anonymous"></script>
 </head>
 <body>
   
   <nav class="navbar">
-    <div class="container">
-      <a href="index.html" class="logo"><span class="blue">FinzaCor</span><span class="purple">e</span></a>
-      <div class="nav-links">
-        <a href="index.html">← Volver al Inicio</a>
+    <div class="navbar__container container">
+      <a href="index.html" class="navbar__logo">FinzaCore</a>
+      <div class="navbar__nav">
+        <a href="index.html">← Volver</a>
       </div>
     </div>
   </nav>
 
-  <main class="container">
-    <div style="max-width: 800px; margin: 0 auto; padding: 4rem 0;">
-      
-      <header style="margin-bottom: 3rem;">
-        <span id="article-category" class="category-badge" style="margin-bottom: 1.5rem; display: inline-block;">Categoría</span>
-        <h1 id="article-title" style="font-family: var(--font-head); font-size: 3.5rem; line-height: 1.1; margin-bottom: 1.5rem;">Cargando artículo...</h1>
-        <div style="display: flex; gap: 1.5rem; color: var(--text-muted); font-size: 0.9rem; font-weight: 500;">
-          <span id="article-date"></span>
-          <span>•</span>
-          <span>Por FinzaCore Editorial</span>
-        </div>
-      </header>
-
-      <img id="article-cover" src="" alt="" style="width: 100%; border-radius: 24px; margin-bottom: 3.5rem;">
-
-      <article id="article-content" class="article-body">
-        <!-- Content -->
-      </article>
-
-      <div class="adsense-leaderboard" style="margin-top: 5rem;">
-        <div class="adsense-box">
-          <span class="adsense-label">📢 PUBLICIDAD</span>
-          <p style="color: var(--text-muted); font-size: 0.8rem;">Google AdSense Unit</p>
-        </div>
-      </div>
-
+  <!-- app.js reemplazará el contenido de main con el artículo y los anuncios In-article -->
+  <main>
+    <div class="container" style="padding: 10rem 0; text-align: center;">
+      <div class="loader" style="border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto;"></div>
+      <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
     </div>
   </main>
+
+  <!-- ========================================================= -->
+  <!-- 2. GOOGLE ADSENSE: MULTIPLEX O FOOTER ADS (RECOMENDADO) -->
+  <!-- ========================================================= -->
+  <!-- Un bloque de anuncios Multiplex aquí al final del artículo genera un CTR muy alto. -->
+  <div class="container" style="max-width: 800px; margin-bottom: 4rem;">
+    <div class="adsense-placeholder" style="min-height: 300px; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-size: 0.9rem;">
+      [Inserta aquí tu código de AdSense Multiplex o In-feed para el final del artículo]
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="container" style="text-align: center; color: var(--text-muted); padding: 2rem 0;">
+      © 2026 FinzaCore · Todos los derechos reservados.
+    </div>
+  </footer>
 
   <script src="app.js"></script>
 </body>

@@ -58,6 +58,21 @@ const handler = async (req, res) => {
 
   // 2. API
   try {
+    // SEO
+    if (route === '/api/sitemap') {
+      const blogs = await readDB();
+      const published = blogs.filter(b => b.published);
+      const hostUrl = `https://${host}`;
+      const urls = published.map(b => `<url><loc>${hostUrl}/article.html?slug=${b.slug}</loc><lastmod>${(new Date(b.createdAt)).toISOString().split('T')[0]}</lastmod><changefreq>weekly</changefreq></url>`).join('');
+      const xml = `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>${hostUrl}/</loc><changefreq>daily</changefreq></url><url><loc>${hostUrl}/blogs.html</loc><changefreq>daily</changefreq></url>${urls}</urlset>`;
+      res.writeHead(200, { 'Content-Type': 'application/xml' });
+      return res.end(xml);
+    }
+    if (route === '/api/robots') {
+      const txt = `User-agent: *\nAllow: /\nSitemap: https://${host}/sitemap.xml`;
+      res.writeHead(200, { 'Content-Type': 'text/plain' });
+      return res.end(txt);
+    }
     // Auth
     if (route === '/api/auth/login' && req.method === 'POST') {
       const { password } = await parseBody(req);
@@ -85,10 +100,13 @@ const handler = async (req, res) => {
       if (req.method === 'GET') return sendJSON(res, 200, blogs);
       if (req.method === 'POST') {
         const body = await parseBody(req);
-        const slug = body.title.toLowerCase()
-          .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Remove accents
-          .replace(/[^a-z0-9 ]/g, '') // Remove special chars
-          .replace(/\s+/g, '-'); // Replace spaces with dashes
+        let slug = body.slug;
+        if (!slug) {
+          slug = body.title.toLowerCase()
+            .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Remove accents
+            .replace(/[^a-z0-9 ]/g, '') // Remove special chars
+            .replace(/\s+/g, '-'); // Replace spaces with dashes
+        }
         const blog = { ...body, id: Date.now().toString(), slug, createdAt: new Date().toISOString() };
         blogs.push(blog); await writeDB(blogs);
         return sendJSON(res, 200, blog);
